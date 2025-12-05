@@ -1,12 +1,12 @@
 param(
     [string]$i,                 # input mode
-    [string]$c,                 # command line package
+    [string]$c,                 # command line mode
     [string]$a,                 # auto mode
     [string]$o,                 # output directory
     [string]$l,                 # list packages
     [string]$d,                 # device serial number
     [switch]$h,                 # help menu
-    [string]$adb = "./adb.exe"  # adb path
+    [string]$adb = "adb.exe"  # adb path
 )
 
 # ----------------------------------------------------------
@@ -15,19 +15,19 @@ param(
 if ($h) {
   Write-Host "Usage:"
   Write-Host "  -i <file>         Input mode (packages from file)"
-  Write-Host "  -s <package>      Single package mode"
+  Write-Host "  -c <package>      command line mode"
   Write-Host "  -a <mode>         Auto mode:"
-  Write-Host "                      auto/default = exclude system apks"
-  Write-Host "                      all = include all apks"
+  Write-Host "                      auto/default = exclude system apk's"
+  Write-Host "                      all = include all apk's"
   Write-Host "  -l <mode>         Lists Mode:"
   Write-Host "                      auto/default = exclude system packages"
   Write-Host "                      all = include all packages"
   Write-Host "  -d <serial>       Specify device serial number (optional)"
-  Write-Host "  -o <directory>    Output directory (default: ./apks-gpt)"
+  Write-Host "  -o <directory>    Output directory (default: ./<device_serial>-packages)"
   Write-Host ""
   Write-Host "Examples:"
-  Write-Host "  .\apk_to_win -s com.android.chrome"
-  Write-Host "  .\apk_to_win -i packages.txt -o C:\APKs"
+  Write-Host "  .\apk_to_win -c com.android.chrome, com.whatsapp"
+  Write-Host "  .\apk_to_win -i packages.txt -o C:\<folder-name>"
   Write-Host "  .\apk_to_win -a auto -o extracted"
   Write-Host "  .\apk_to_win -l all"
   Write-Host "  .\apk_to_win -d emulator-5554 -a all"
@@ -98,12 +98,12 @@ else {
 # Store device argument separately
 $adbDevice = @("-s", $selectedDevice)
 
-# Default output directory = ./apks
+# Default output directory = ./<device_serial>-packages
 if ($o) {
   $BaseOut = $o
 }
 else {
-  $FolderName = "apks-"+$selectedDevice -replace "[\/:*?""<>|]", "-"
+  $FolderName = $selectedDevice -replace "[\/:*?""<>|]", "-" + "-packages"
   $BaseOut = Join-Path (Get-Location) $FolderName
 }
 
